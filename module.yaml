@@ -1,0 +1,20 @@
+notests *default:
+  build:
+    target: Vostok.ZooKeeper.LocalEnsemble.sln
+    configuration: NoTests
+    tool:
+      name: dotnet
+
+  install:
+    - Vostok.ZooKeeper.LocalEnsemble/bin/Release/netstandard2.0/Vostok.ZooKeeper.LocalEnsemble.dll
+
+  deps:
+    - vostok.logging.console
+    - vostok.commons.time
+    - vostok.logging.abstractions
+    - vostok.devtools
+
+full-build > notests:
+  build:
+    target: Vostok.ZooKeeper.LocalEnsemble.sln
+    configuration: Release
