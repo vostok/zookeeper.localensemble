@@ -11,163 +11,167 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 {
     [PublicAPI]
     public class ZooKeeperEnsemble : IDisposable
-	{
-		public ZooKeeperEnsemble(int size, ILog log)
-		{
-			this.log = log.ForContext("ZKEnsemble");
-			if (size < 1)
-				throw new ArgumentOutOfRangeException(nameof(size));
-			instances = CreateInstances(size, this.log);
-			LogInstances();
-		}
+    {
+        private readonly ILog log;
 
-		public static ZooKeeperEnsemble DeployNew(int size, ILog log)
-		{
-			var ensemble = new ZooKeeperEnsemble(size, log);
-			ensemble.Deploy();
-			return ensemble;
-		}
+        private volatile bool isRunning;
+        private volatile bool isDisposed;
 
-		public void Deploy()
-		{
-			try
-			{
-				ZooKeeperDeployer.DeployInstances(instances);
-				Start();
-			}
-			catch (Exception error)
-			{
-				LogErrorInStarting(error);
-				Dispose();
-				throw;
-			}
-		}
+        public ZooKeeperEnsemble(int size, ILog log)
+        {
+            this.log = log.ForContext("ZKEnsemble");
+            if (size < 1)
+                throw new ArgumentOutOfRangeException(nameof(size));
+            Instances = CreateInstances(size, this.log);
+            LogInstances();
+        }
 
-		public void Start()
-		{
+        public static ZooKeeperEnsemble DeployNew(int size, ILog log)
+        {
+            var ensemble = new ZooKeeperEnsemble(size, log);
+            ensemble.Deploy();
+            return ensemble;
+        }
+
+        public bool IsDisposed => isDisposed;
+
+        public bool IsRunning => isRunning;
+
+        public List<ZooKeeperInstance> Instances { get; }
+
+        public string ConnectionString
+        {
+            get { return string.Join(",", Instances.Select(instance => $"localhost:{instance.ClientPort}")); }
+        }
+
+        public void Deploy()
+        {
+            try
+            {
+                ZooKeeperDeployer.DeployInstances(Instances);
+                Start();
+            }
+            catch (Exception error)
+            {
+                LogErrorInStarting(error);
+                Dispose();
+                throw;
+            }
+        }
+
+        public void Start()
+        {
             if (!isRunning)
             {
                 LogStarting();
-                foreach (var instance in instances)
+                foreach (var instance in Instances)
                     instance.Start();
                 WaitAndCheckInstancesAreRunning();
                 LogStarted();
                 isRunning = true;
             }
-		}
+        }
 
-		public void Stop()
-		{
-		    if (isRunning)
-		    {
-		        LogStopping();
-		        foreach (var instance in instances)
-		            instance.Stop();
-		        LogStopped();
-		        isRunning = false;
-		    }
-		}
+        public void Stop()
+        {
+            if (isRunning)
+            {
+                LogStopping();
+                foreach (var instance in Instances)
+                    instance.Stop();
+                LogStopped();
+                isRunning = false;
+            }
+        }
 
-		public void Dispose()
-		{
-		    if (!isDisposed)
-		    {
-		        Stop();
-		        LogCleaning();
-		        ZooKeeperDeployer.CleanupInstances(instances);
-		        LogCleaned();
+        public void Dispose()
+        {
+            if (!isDisposed)
+            {
+                Stop();
+                LogCleaning();
+                ZooKeeperDeployer.CleanupInstances(Instances);
+                LogCleaned();
                 isDisposed = true;
-		    }
-		}
+            }
+        }
 
-        public bool IsDisposed => isDisposed;
-
-	    public bool IsRunning => isRunning;
-
-	    public List<ZooKeeperInstance> Instances => instances;
-
-	    public string ConnectionString
-		{
-			get { return string.Join(",", instances.Select(instance => $"localhost:{instance.ClientPort}")); }
-		}
-
-		private void WaitAndCheckInstancesAreRunning()
-		{
-			var timeout = TimeSpan.FromSeconds(5);
-			var watch = Stopwatch.StartNew();
-			var idleInstances = 0;
-			while (watch.Elapsed < timeout)
-			{
-				idleInstances = instances.Count(instance => !instance.IsRunning());
-				if (idleInstances == 0)
-				{
-					Thread.Sleep(TimeSpan.FromSeconds(1));
-					return;
-				}
-				Thread.Sleep(100);
-			}
-			throw new Exception($"{idleInstances} of {instances.Count} instances have not started.");
-		}
-
-		private static List<ZooKeeperInstance> CreateInstances(int size, ILog log)
-		{
-			var instances = new List<ZooKeeperInstance>(size);
-			for (var i = 1; i <= size; i++)
-			{
-			    var clientPort = FreeTcpPortFinder.GetFreePort();
-			    var peerPort = FreeTcpPortFinder.GetFreePort();
-			    var electionPort = FreeTcpPortFinder.GetFreePort();
+        private static List<ZooKeeperInstance> CreateInstances(int size, ILog log)
+        {
+            var instances = new List<ZooKeeperInstance>(size);
+            for (var i = 1; i <= size; i++)
+            {
+                var clientPort = FreeTcpPortFinder.GetFreePort();
+                var peerPort = FreeTcpPortFinder.GetFreePort();
+                var electionPort = FreeTcpPortFinder.GetFreePort();
                 instances.Add(new ZooKeeperInstance(i, new DirectoryInfo("ZK-" + i).FullName, clientPort, peerPort, electionPort, log));
-			}
-			return instances;
-		}
+            }
 
-		#region Logging
-		private void LogInstances()
-		{
-			log.Info("Created instances: \n\t" + string.Join("\n\t", instances.Select(i => i.ToString())));
-		}
+            return instances;
+        }
 
-		private void LogStarting()
-		{
-			log.Info("Starting instances..");
-		}
+        private void WaitAndCheckInstancesAreRunning()
+        {
+            var timeout = TimeSpan.FromSeconds(5);
+            var watch = Stopwatch.StartNew();
+            var idleInstances = 0;
+            while (watch.Elapsed < timeout)
+            {
+                idleInstances = Instances.Count(instance => !instance.IsRunning());
+                if (idleInstances == 0)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
+                    return;
+                }
 
-		private void LogStarted()
-		{
-			log.Info("Started successfully!");
-		}
+                Thread.Sleep(100);
+            }
 
-		private void LogErrorInStarting(Exception error)
-		{
-			log.Error("Error in starting. Will try to stop. Exception: {0}", error);
-		}
+            throw new Exception($"{idleInstances} of {Instances.Count} instances have not started.");
+        }
 
-		private void LogStopping()
-		{
-			log.Info("Stopping instances..");
-		}
+        #region Logging
 
-		private void LogStopped()
-		{
-			log.Info("Stopped successfully!");
-		}
+        private void LogInstances()
+        {
+            log.Info("Created instances: \n\t" + string.Join("\n\t", Instances.Select(i => i.ToString())));
+        }
 
-		private void LogCleaning()
-		{
-			log.Info("Cleaning directories..");
-		}
+        private void LogStarting()
+        {
+            log.Info("Starting instances..");
+        }
 
-		private void LogCleaned()
-		{
-			log.Info("Cleaned directories successfully!");
-		}
-		#endregion
+        private void LogStarted()
+        {
+            log.Info("Started successfully!");
+        }
 
-		private readonly List<ZooKeeperInstance> instances;
-		private readonly ILog log;
+        private void LogErrorInStarting(Exception error)
+        {
+            log.Error("Error in starting. Will try to stop. Exception: {0}", error);
+        }
 
-	    private volatile bool isRunning;
-        private volatile bool isDisposed;
-	}
+        private void LogStopping()
+        {
+            log.Info("Stopping instances..");
+        }
+
+        private void LogStopped()
+        {
+            log.Info("Stopped successfully!");
+        }
+
+        private void LogCleaning()
+        {
+            log.Info("Cleaning directories..");
+        }
+
+        private void LogCleaned()
+        {
+            log.Info("Cleaned directories successfully!");
+        }
+
+        #endregion
+    }
 }
