@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Threading;
 using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
@@ -13,6 +14,8 @@ namespace Vostok.ZooKeeper.LocalEnsemble
     {
         private const string serverScriptName = "zkServer.cmd";
 
+        private readonly WindowsProcessKillJob processKillJob;
+
         private Process process;
 
         public ZooKeeperInstance(int id, string baseDirectory, int clientPort, int peerPort, int electionPort, ILog log)
@@ -22,6 +25,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             ClientPort = clientPort;
             PeerPort = peerPort;
             ElectionPort = electionPort;
+            processKillJob = new WindowsProcessKillJob(log);
         }
 
         public int Id { get; }
@@ -67,6 +71,11 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
             WaitForInstanceToStart();
             WaitTillJavaProcessSpawns(process, TimeSpan.FromSeconds(1));
+
+            foreach (Process childProcess in GetChildJavaProcesses(process.Id))
+                processKillJob.AddProcess(childProcess);
+
+            processKillJob.AddProcess(process);
         }
 
         public void Stop()
@@ -127,9 +136,14 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         private static IEnumerable<Process> GetChildJavaProcesses(int parentId)
         {
-            foreach (var process in Process.GetProcesses().Where(x => x.ProcessName.Contains("java")))
+            using (var searcher = new ManagementObjectSearcher("select ProcessId from Win32_Process where ParentProcessId=" + parentId))
             {
-                yield return process;
+                return searcher
+                    .Get()
+                    .Cast<ManagementBaseObject>()
+                    .Select(m => Convert.ToInt32(m["ProcessId"]))
+                    .Select(Process.GetProcessById)
+                    .Where(p => p.ProcessName.Contains("java"));
             }
         }
     }
