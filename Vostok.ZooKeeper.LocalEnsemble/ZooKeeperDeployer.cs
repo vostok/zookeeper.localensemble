@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Vostok.ZooKeeper.LocalEnsemble.Misc;
-using Vostok.ZooKeeper.LocalEnsemble.Properties;
 
 namespace Vostok.ZooKeeper.LocalEnsemble
 {
@@ -99,7 +98,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         private static byte[] GetResources(string fileName)
         {
-            return ResourceHelper.GetBytes<Resources>($"Vostok.ZooKeeper.LocalEnsemble.Resources.{fileName}");
+            return ResourceHelper.GetBytes<ZooKeeperInstance>($"Vostok.ZooKeeper.LocalEnsemble.Resources.{fileName}");
         }
 
         // ReSharper disable once InconsistentNaming
