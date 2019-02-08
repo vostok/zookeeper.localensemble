@@ -19,7 +19,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         private volatile bool isRunning;
         private volatile bool isDisposed;
 
-        /// <inheritdoc cref="ZooKeeperInstance"/>
+        /// <inheritdoc cref="ZooKeeperInstance" />
         public ZooKeeperEnsemble(int size, ILog log)
         {
             this.log = log.ForContext("ZKEnsemble");
@@ -31,10 +31,10 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         }
 
         /// <summary>
-        /// Creates and deploys new <see cref="ZooKeeperEnsemble"/>
+        /// Creates and deploys new <see cref="ZooKeeperEnsemble" />
         /// </summary>
         /// <param name="size">Amount of instances.</param>
-        /// <param name="log"><see cref="ILog"/> instance.</param>
+        /// <param name="log"><see cref="ILog" /> instance.</param>
         public static ZooKeeperEnsemble DeployNew(int size, ILog log)
         {
             var ensemble = new ZooKeeperEnsemble(size, log);
@@ -53,7 +53,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         public bool IsRunning => isRunning;
 
         /// <summary>
-        /// Returns <see cref="ZooKeeperInstance"/> instances of ensemble.
+        /// Returns <see cref="ZooKeeperInstance" /> instances of ensemble.
         /// </summary>
         public List<ZooKeeperInstance> Instances { get; }
 
@@ -66,7 +66,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         }
 
         /// <summary>
-        /// Deploys <see cref="ZooKeeperEnsemble"/> to folder.
+        /// Deploys <see cref="ZooKeeperEnsemble" /> to folder.
         /// </summary>
         public void Deploy()
         {
@@ -84,7 +84,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         }
 
         /// <summary>
-        /// Starts <see cref="ZooKeeperEnsemble"/> to folder.
+        /// Starts <see cref="ZooKeeperEnsemble" /> to folder.
         /// </summary>
         public void Start()
         {
@@ -100,7 +100,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         }
 
         /// <summary>
-        /// Stops <see cref="ZooKeeperEnsemble"/> to folder.
+        /// Stops <see cref="ZooKeeperEnsemble" /> to folder.
         /// </summary>
         public void Stop()
         {

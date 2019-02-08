@@ -15,20 +15,20 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         public WindowsProcessKillJob(ILog log = null)
         {
-            this.log = log ?? (ILog)new SilentLog();
+            this.log = log ?? new SilentLog();
             jobHandle = Kernel32.CreateJobObject(IntPtr.Zero, IntPtr.Zero);
             if (jobHandle == IntPtr.Zero)
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             try
             {
-                JOBOBJECT_EXTENDED_LIMIT_INFORMATION limitInformation = new JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
+                var limitInformation = new JOBOBJECT_EXTENDED_LIMIT_INFORMATION
                 {
-                    BasicLimitInformation = new JOBOBJECT_BASIC_LIMIT_INFORMATION()
+                    BasicLimitInformation = new JOBOBJECT_BASIC_LIMIT_INFORMATION
                     {
                         LimitFlags = JOBOBJECT_BASIC_LIMIT_FLAGS.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
                     }
                 };
-                int cb = Marshal.SizeOf((object)limitInformation);
+                var cb = Marshal.SizeOf((object)limitInformation);
                 jobObjectInfoPtr = Marshal.AllocHGlobal(cb);
                 try
                 {

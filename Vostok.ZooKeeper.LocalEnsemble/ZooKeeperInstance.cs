@@ -23,7 +23,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         private Process process;
 
-        /// <inheritdoc cref="ZooKeeperInstance"/>
+        /// <inheritdoc cref="ZooKeeperInstance" />
         public ZooKeeperInstance(int id, string baseDirectory, int clientPort, int peerPort, int electionPort, ILog log)
         {
             Id = id;
@@ -31,7 +31,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             ClientPort = clientPort;
             PeerPort = peerPort;
             ElectionPort = electionPort;
-            processKillJob = Environment.OSVersion.Platform == PlatformID.Unix ? null : new WindowsProcessKillJob(log);
+            processKillJob = OsIsUnix() ? null : new WindowsProcessKillJob(log);
         }
 
         /// <summary>
@@ -124,6 +124,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
                 foreach (var childProcess in GetChildJavaProcesses(process.Id))
                 {
                     if (!childProcess.HasExited)
+                    {
                         try
                         {
                             childProcess.Kill();
@@ -132,9 +133,11 @@ namespace Vostok.ZooKeeper.LocalEnsemble
                         catch
                         {
                         }
+                    }
                 }
 
                 if (!process.HasExited)
+                {
                     try
                     {
                         process.Kill();
@@ -143,16 +146,16 @@ namespace Vostok.ZooKeeper.LocalEnsemble
                     catch
                     {
                     }
+                }
             }
 
             process = null;
         }
 
         /// <returns>String representation of ZooKeeperInstance.</returns>
-        public override string ToString()
-        {
-            return $"localhost:{ClientPort}:{PeerPort}:{ElectionPort} (id {Id}) at '{BaseDirectory}'";
-        }
+        public override string ToString() => $"localhost:{ClientPort}:{PeerPort}:{ElectionPort} (id {Id}) at '{BaseDirectory}'";
+
+        private static bool OsIsUnix() => Environment.OSVersion.Platform == PlatformID.Unix;
 
         private static void WaitTillJavaProcessSpawns(Process parentProcess, TimeSpan timeout)
         {

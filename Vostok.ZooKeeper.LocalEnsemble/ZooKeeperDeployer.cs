@@ -22,6 +22,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             foreach (var instance in instances)
             {
                 for (var i = 0; i < 3; i++)
+                {
                     try
                     {
                         Directory.Delete(instance.BaseDirectory, true);
@@ -31,6 +32,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
                     {
                         Thread.Sleep(500);
                     }
+                }
             }
         }
 
@@ -96,10 +98,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             File.WriteAllBytes(Path.Combine(directory, fileName), GetResources(fileName));
         }
 
-        private static byte[] GetResources(string fileName)
-        {
-            return ResourceHelper.GetBytes<ZooKeeperInstance>($"Vostok.ZooKeeper.LocalEnsemble.Resources.{fileName}");
-        }
+        private static byte[] GetResources(string fileName) => ResourceHelper.GetBytes<ZooKeeperInstance>($"Vostok.ZooKeeper.LocalEnsemble.Resources.{fileName}");
 
         // ReSharper disable once InconsistentNaming
         private static string CreateLog4jConfig(ZooKeeperInstance instance)
