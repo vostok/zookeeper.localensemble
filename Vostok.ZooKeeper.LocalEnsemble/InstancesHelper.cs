@@ -27,6 +27,5 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
             throw new Exception($"{idleInstances} of {instances.Count} instances have not started.");
         }
-
     }
 }

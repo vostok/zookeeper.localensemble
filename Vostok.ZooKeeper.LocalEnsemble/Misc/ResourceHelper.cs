@@ -16,6 +16,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble.Misc
                     throw new Exception(
                         $"Resource {name} not found in {assembly.FullName}.  Valid resources are: {string.Join(", ", assembly.GetManifestResourceNames())}.");
                 }
+
                 using (var ms = new MemoryStream())
                 {
                     stream.CopyTo(ms);

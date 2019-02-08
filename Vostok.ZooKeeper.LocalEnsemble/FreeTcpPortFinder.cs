@@ -11,7 +11,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             try
             {
                 tcpListener.Start();
-                return ((IPEndPoint) tcpListener.LocalEndpoint).Port;
+                return ((IPEndPoint)tcpListener.LocalEndpoint).Port;
             }
             finally
             {
