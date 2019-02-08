@@ -69,10 +69,10 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             if (!process.Start())
                 throw new Exception($"Failed to start process of participant '{Id}'.");
 
-            WaitForInstanceToStart();
+            ZooKeeperEnsemble.WaitAndCheckInstancesAreRunning(new List<ZooKeeperInstance> {this});
             WaitTillJavaProcessSpawns(process, TimeSpan.FromSeconds(1));
 
-            foreach (Process childProcess in GetChildJavaProcesses(process.Id))
+            foreach (var childProcess in GetChildJavaProcesses(process.Id))
                 processKillJob.AddProcess(childProcess);
 
             processKillJob.AddProcess(process);
@@ -114,11 +114,6 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         public override string ToString()
         {
             return $"localhost:{ClientPort}:{PeerPort}:{ElectionPort} (id {Id}) at '{BaseDirectory}'";
-        }
-
-        private static void WaitForInstanceToStart()
-        {
-            Thread.Sleep(TimeSpan.FromMilliseconds(100));
         }
 
         private static void WaitTillJavaProcessSpawns(Process parentProcess, TimeSpan timeout)
