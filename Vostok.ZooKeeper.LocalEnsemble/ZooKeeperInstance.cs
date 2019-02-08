@@ -46,8 +46,6 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         public string DataDirectory => Path.Combine(BinDirectory, "data");
 
-        public string LogFileName => Path.Combine(BaseDirectory, "ZK-" + Id + ".log");
-
         public bool IsRunning()
         {
             return process != null && !process.HasExited;
@@ -69,7 +67,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             if (!process.Start())
                 throw new Exception($"Failed to start process of participant '{Id}'.");
 
-            ZooKeeperEnsemble.WaitAndCheckInstancesAreRunning(new List<ZooKeeperInstance> {this});
+            InstancesHelper.WaitAndCheckInstancesAreRunning(new List<ZooKeeperInstance> {this});
             WaitTillJavaProcessSpawns(process, TimeSpan.FromSeconds(1));
 
             foreach (var childProcess in GetChildJavaProcesses(process.Id))

@@ -66,7 +66,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
                 LogStarting();
                 foreach (var instance in Instances)
                     instance.Start();
-                WaitAndCheckInstancesAreRunning(Instances);
+                InstancesHelper.WaitAndCheckInstancesAreRunning(Instances);
                 LogStarted();
                 isRunning = true;
             }
@@ -110,26 +110,6 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             return instances;
         }
 
-        public static void WaitAndCheckInstancesAreRunning(List<ZooKeeperInstance> instances)
-        {
-            var timeout = TimeSpan.FromSeconds(5);
-            var watch = Stopwatch.StartNew();
-            var idleInstances = 0;
-            while (watch.Elapsed < timeout)
-            {
-                idleInstances = instances.Count(instance => !instance.IsRunning());
-                if (idleInstances == 0)
-                {
-                    Thread.Sleep(TimeSpan.FromSeconds(1));
-                    return;
-                }
-
-                Thread.Sleep(100);
-            }
-
-            throw new Exception($"{idleInstances} of {instances.Count} instances have not started.");
-        }
-
         #region Logging
 
         private void LogInstances()
@@ -149,7 +129,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         private void LogErrorInStarting(Exception error)
         {
-            log.Error("Error in starting. Will try to stop. Exception: {0}", error);
+            log.Error(error, "Error in starting. Will try to stop.");
         }
 
         private void LogStopping()
