@@ -36,13 +36,13 @@ namespace Vostok.ZooKeeper.LocalEnsemble
                     if (!Kernel32.SetInformationJobObject(jobHandle, JOBOBJECTINFOCLASS.JobObjectExtendedLimitInformation, jobObjectInfoPtr, (uint)cb))
                         throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     Marshal.FreeHGlobal(jobObjectInfoPtr);
                     throw;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Kernel32.CloseHandle(jobHandle);
                 throw;

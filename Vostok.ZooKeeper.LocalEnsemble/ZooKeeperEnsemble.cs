@@ -7,6 +7,10 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.ZooKeeper.LocalEnsemble
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// Represents ensemble of multiple ZooKeeper instances.
+    /// </summary>
     [PublicAPI]
     public class ZooKeeperEnsemble : IDisposable
     {
@@ -15,15 +19,22 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         private volatile bool isRunning;
         private volatile bool isDisposed;
 
+        /// <inheritdoc cref="ZooKeeperInstance"/>
         public ZooKeeperEnsemble(int size, ILog log)
         {
             this.log = log.ForContext("ZKEnsemble");
             if (size < 1)
                 throw new ArgumentOutOfRangeException(nameof(size));
             Instances = CreateInstances(size, this.log);
-            LogInstances();
+
+            log.Info("Created instances: \n\t" + string.Join("\n\t", Instances.Select(i => i.ToString())));
         }
 
+        /// <summary>
+        /// Creates and deploys new <see cref="ZooKeeperEnsemble"/>
+        /// </summary>
+        /// <param name="size">Amount of instances.</param>
+        /// <param name="log"><see cref="ILog"/> instance.</param>
         public static ZooKeeperEnsemble DeployNew(int size, ILog log)
         {
             var ensemble = new ZooKeeperEnsemble(size, log);
@@ -31,17 +42,32 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             return ensemble;
         }
 
+        /// <summary>
+        /// Check that ensemble is disposed.
+        /// </summary>
         public bool IsDisposed => isDisposed;
 
+        /// <summary>
+        /// Check that ensemble is running.
+        /// </summary>
         public bool IsRunning => isRunning;
 
+        /// <summary>
+        /// Returns <see cref="ZooKeeperInstance"/> instances of ensemble.
+        /// </summary>
         public List<ZooKeeperInstance> Instances { get; }
 
+        /// <summary>
+        /// Returns ensemble connection string.
+        /// </summary>
         public string ConnectionString
         {
             get { return string.Join(",", Instances.Select(instance => $"localhost:{instance.ClientPort}")); }
         }
 
+        /// <summary>
+        /// Deploys <see cref="ZooKeeperEnsemble"/> to folder.
+        /// </summary>
         public void Deploy()
         {
             try
@@ -51,45 +77,55 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             }
             catch (Exception error)
             {
-                LogErrorInStarting(error);
+                log.Error(error, "Error in starting. Will try to stop.");
                 Dispose();
                 throw;
             }
         }
 
+        /// <summary>
+        /// Starts <see cref="ZooKeeperEnsemble"/> to folder.
+        /// </summary>
         public void Start()
         {
             if (!isRunning)
             {
-                LogStarting();
+                log.Info("Starting instances..");
                 foreach (var instance in Instances)
                     instance.Start();
                 InstancesHelper.WaitAndCheckInstancesAreRunning(Instances);
-                LogStarted();
+                log.Info("Started successfully!");
                 isRunning = true;
             }
         }
 
+        /// <summary>
+        /// Stops <see cref="ZooKeeperEnsemble"/> to folder.
+        /// </summary>
         public void Stop()
         {
             if (isRunning)
             {
-                LogStopping();
+                log.Info("Stopping instances..");
                 foreach (var instance in Instances)
                     instance.Stop();
-                LogStopped();
+                log.Info("Stopped successfully!");
                 isRunning = false;
             }
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Stops all <see cref="T:Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance" /> instances and cleans folder.
+        /// </summary>
         public void Dispose()
         {
             if (!isDisposed)
             {
                 Stop();
-                LogCleaning();
+                log.Info("Cleaning directories..");
                 ZooKeeperDeployer.CleanupInstances(Instances);
-                LogCleaned();
+                log.Info("Cleaned directories successfully!");
                 isDisposed = true;
             }
         }
@@ -107,49 +143,5 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
             return instances;
         }
-
-        #region Logging
-
-        private void LogInstances()
-        {
-            log.Info("Created instances: \n\t" + string.Join("\n\t", Instances.Select(i => i.ToString())));
-        }
-
-        private void LogStarting()
-        {
-            log.Info("Starting instances..");
-        }
-
-        private void LogStarted()
-        {
-            log.Info("Started successfully!");
-        }
-
-        private void LogErrorInStarting(Exception error)
-        {
-            log.Error(error, "Error in starting. Will try to stop.");
-        }
-
-        private void LogStopping()
-        {
-            log.Info("Stopping instances..");
-        }
-
-        private void LogStopped()
-        {
-            log.Info("Stopped successfully!");
-        }
-
-        private void LogCleaning()
-        {
-            log.Info("Cleaning directories..");
-        }
-
-        private void LogCleaned()
-        {
-            log.Info("Cleaned directories successfully!");
-        }
-
-        #endregion
     }
 }

@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Vostok.ZooKeeper.LocalEnsemble
 {
-    public static class InstancesHelper
+    internal static class InstancesHelper
     {
         public static void WaitAndCheckInstancesAreRunning(List<ZooKeeperInstance> instances)
         {
@@ -15,7 +15,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             var idleInstances = 0;
             while (watch.Elapsed < timeout)
             {
-                idleInstances = instances.Count(instance => !instance.IsRunning());
+                idleInstances = instances.Count(instance => !instance.IsRunning);
                 if (idleInstances == 0)
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(1));

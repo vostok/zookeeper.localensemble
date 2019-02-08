@@ -5,19 +5,25 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Threading;
+using JetBrains.Annotations;
 using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ZooKeeper.LocalEnsemble
 {
+    /// <summary>
+    /// Represents ZooKeeper instance based on java implementation.
+    /// </summary>
+    [PublicAPI]
     public class ZooKeeperInstance
     {
-        private const string serverScriptName = "zkServer.cmd";
+        private const string ServerScriptName = "zkServer.cmd";
 
         private readonly WindowsProcessKillJob processKillJob;
 
         private Process process;
 
+        /// <inheritdoc cref="ZooKeeperInstance"/>
         public ZooKeeperInstance(int id, string baseDirectory, int clientPort, int peerPort, int electionPort, ILog log)
         {
             Id = id;
@@ -28,32 +34,62 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             processKillJob = new WindowsProcessKillJob(log);
         }
 
+        /// <summary>
+        /// Returns instance id.
+        /// </summary>
         public int Id { get; }
 
+        /// <summary>
+        /// Returns instance client port.
+        /// </summary>
         public int ClientPort { get; }
 
+        /// <summary>
+        /// Returns instance peer port.
+        /// </summary>
         public int PeerPort { get; }
 
+        /// <summary>
+        /// Returns instance election port.
+        /// </summary>
         public int ElectionPort { get; }
 
+        /// <summary>
+        /// Returns instance base directory.
+        /// </summary>
         public string BaseDirectory { get; }
 
+        /// <summary>
+        /// Returns instance lib directory.
+        /// </summary>
         public string LibDirectory => Path.Combine(BaseDirectory, "lib");
 
+        /// <summary>
+        /// Returns instance bin directory.
+        /// </summary>
         public string BinDirectory => Path.Combine(BaseDirectory, "bin");
 
+        /// <summary>
+        /// Returns instance configuration directory.
+        /// </summary>
         public string ConfDirectory => Path.Combine(BaseDirectory, "conf");
 
+        /// <summary>
+        /// Returns instance data directory.
+        /// </summary>
         public string DataDirectory => Path.Combine(BinDirectory, "data");
 
-        public bool IsRunning()
-        {
-            return process != null && !process.HasExited;
-        }
+        /// <summary>
+        /// Check that instance is running.
+        /// </summary>
+        public bool IsRunning => process != null && !process.HasExited;
 
+        /// <summary>
+        /// <para>Starts instance.</para>
+        /// </summary>
         public void Start()
         {
-            var processStartInfo = new ProcessStartInfo(Path.Combine(BinDirectory, serverScriptName))
+            var processStartInfo = new ProcessStartInfo(Path.Combine(BinDirectory, ServerScriptName))
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -76,6 +112,9 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             processKillJob.AddProcess(process);
         }
 
+        /// <summary>
+        /// <para>Stops instance.</para>
+        /// </summary>
         public void Stop()
         {
             if (process == null)
@@ -109,6 +148,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             process = null;
         }
 
+        /// <returns>String representation of ZooKeeperInstance.</returns>
         public override string ToString()
         {
             return $"localhost:{ClientPort}:{PeerPort}:{ElectionPort} (id {Id}) at '{BaseDirectory}'";
