@@ -66,7 +66,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         {
             if (Kernel32.AssignProcessToJobObject(jobHandle, processHandle))
                 return;
-            log.Error("ProcessKillJob. Failed to add process to job.", (Exception)new Win32Exception(Marshal.GetLastWin32Error()));
+            log.Error(new Win32Exception(Marshal.GetLastWin32Error()), "ProcessKillJob. Failed to add process to job.");
         }
     }
 }

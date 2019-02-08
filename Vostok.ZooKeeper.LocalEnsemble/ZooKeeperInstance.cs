@@ -31,7 +31,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             ClientPort = clientPort;
             PeerPort = peerPort;
             ElectionPort = electionPort;
-            processKillJob = new WindowsProcessKillJob(log);
+            processKillJob = Environment.OSVersion.Platform == PlatformID.Unix ? null : new WindowsProcessKillJob(log);
         }
 
         /// <summary>
@@ -107,9 +107,9 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             WaitTillJavaProcessSpawns(process, TimeSpan.FromSeconds(1));
 
             foreach (var childProcess in GetChildJavaProcesses(process.Id))
-                processKillJob.AddProcess(childProcess);
+                processKillJob?.AddProcess(childProcess);
 
-            processKillJob.AddProcess(process);
+            processKillJob?.AddProcess(process);
         }
 
         /// <summary>
