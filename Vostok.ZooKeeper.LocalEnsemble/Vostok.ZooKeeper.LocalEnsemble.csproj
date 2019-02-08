@@ -21,6 +21,28 @@
     <RepositoryUrl>https://github.com/vostok/zookeeper.localensemble</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\jarjar-1.4.jar" />
+    <None Remove="Resources\jline_0_9_94.jar" />
+    <None Remove="Resources\log4j_1_2_15.jar" />
+    <None Remove="Resources\netty_3_2_2_Final.jar" />
+    <None Remove="Resources\slf4j_api_1_6_1.jar" />
+    <None Remove="Resources\slf4j_log4j12_1_6_1.jar" />
+    <None Remove="Resources\zkEnv.cmd" />
+    <None Remove="Resources\zkServer.cmd" />
+    <None Remove="Resources\zookeeper_3_4_5.jar" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\jarjar-1.4.jar" />
+    <EmbeddedResource Include="Resources\jline_0_9_94.jar" />
+    <EmbeddedResource Include="Resources\log4j_1_2_15.jar" />
+    <EmbeddedResource Include="Resources\netty_3_2_2_Final.jar" />
+    <EmbeddedResource Include="Resources\slf4j_api_1_6_1.jar" />
+    <EmbeddedResource Include="Resources\slf4j_log4j12_1_6_1.jar" />
+    <EmbeddedResource Include="Resources\zkEnv.cmd" />
+    <EmbeddedResource Include="Resources\zkServer.cmd" />
+    <EmbeddedResource Include="Resources\zookeeper_3_4_5.jar" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="System.Management" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
@@ -36,18 +58,5 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.commons.environment\Vostok.Commons.Environment\bin\Release\netstandard2.0\Vostok.Commons.Environment.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>

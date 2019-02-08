@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Vostok.ZooKeeper.LocalEnsemble.Misc;
 using Vostok.ZooKeeper.LocalEnsemble.Properties;
 
 namespace Vostok.ZooKeeper.LocalEnsemble
@@ -74,16 +75,16 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         private static void DeployFiles(ZooKeeperInstance instance, string config)
         {
             // (iloktionov): Libraries.
-            File.WriteAllBytes(Path.Combine(instance.LibDirectory, "jline_0_9_94.jar"), Resources.jline_0_9_94);
-            File.WriteAllBytes(Path.Combine(instance.LibDirectory, "log4j_1_2_15.jar"), Resources.log4j_1_2_15);
-            File.WriteAllBytes(Path.Combine(instance.LibDirectory, "netty_3_2_2_Final.jar"), Resources.netty_3_2_2_Final);
-            File.WriteAllBytes(Path.Combine(instance.LibDirectory, "slf4j_api_1_6_1.jar"), Resources.slf4j_api_1_6_1);
-            File.WriteAllBytes(Path.Combine(instance.LibDirectory, "slf4j_log4j12_1_6_1.jar"), Resources.slf4j_log4j12_1_6_1);
+            SaveResources(instance.LibDirectory, "jline_0_9_94.jar");
+            SaveResources(instance.LibDirectory, "log4j_1_2_15.jar");
+            SaveResources(instance.LibDirectory, "netty_3_2_2_Final.jar");
+            SaveResources(instance.LibDirectory, "slf4j_api_1_6_1.jar");
+            SaveResources(instance.LibDirectory, "slf4j_log4j12_1_6_1.jar");
             // (iloktionov): Control scripts. 
-            File.WriteAllText(Path.Combine(instance.BinDirectory, "zkEnv.cmd"), Resources.zkEnv);
-            File.WriteAllText(Path.Combine(instance.BinDirectory, "zkServer.cmd"), Resources.zkServer);
+            SaveResources(instance.BinDirectory, "zkEnv.cmd");
+            SaveResources(instance.BinDirectory, "zkServer.cmd");
             // (iloktionov): Actual ZK lib.
-            File.WriteAllBytes(Path.Combine(instance.BaseDirectory, "zookeeper_3_4_5.jar"), Resources.zookeeper_3_4_5);
+            SaveResources(instance.BaseDirectory, "zookeeper_3_4_5.jar");
             // (iloktionov): Configs.
             File.WriteAllText(Path.Combine(instance.ConfDirectory, "zoo.cfg"), config);
             File.WriteAllText(Path.Combine(instance.ConfDirectory, "log4j.properties"), CreateLog4jConfig(instance));
@@ -91,6 +92,17 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             File.WriteAllText(Path.Combine(instance.DataDirectory, "myid"), instance.Id.ToString());
         }
 
+        private static void SaveResources(string directory, string fileName)
+        {
+            File.WriteAllBytes(Path.Combine(directory, fileName), GetResources(fileName));
+        }
+
+        private static byte[] GetResources(string fileName)
+        {
+            return ResourceHelper.GetBytes<Resources>($"Vostok.ZooKeeper.LocalEnsemble.Resources.{fileName}");
+        }
+
+        // ReSharper disable once InconsistentNaming
         private static string CreateLog4jConfig(ZooKeeperInstance instance)
         {
             var builder = new StringBuilder();
