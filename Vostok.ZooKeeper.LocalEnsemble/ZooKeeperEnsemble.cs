@@ -25,6 +25,11 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             if (settings.Size < 1)
                 throw new ArgumentOutOfRangeException(nameof(settings.Size), "Ensemble must have at least one instance.");
 
+            if (settings.InstancesPorts != null && settings.InstancesPorts.Count != settings.Size)
+                throw new ArgumentException(
+                    "You should either specify port for every instance or specify none",
+                    nameof(settings.InstancesPorts));
+
             Instances = CreateInstances(settings, this.log);
         }
 
@@ -122,7 +127,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
             for (var i = 0; i < settings.Size; i++)
             {
-                var clientPort = FreeTcpPortFinder.GetFreePort();
+                var clientPort = settings.InstancesPorts?[i] ?? FreeTcpPortFinder.GetFreePort();
                 var peerPort = FreeTcpPortFinder.GetFreePort();
                 var electionPort = FreeTcpPortFinder.GetFreePort();
                 var index = settings.StartingId + i;

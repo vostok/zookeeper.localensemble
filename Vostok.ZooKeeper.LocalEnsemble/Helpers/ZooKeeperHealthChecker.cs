@@ -29,7 +29,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble.Helpers
             var sw = Stopwatch.StartNew();
             while (sw.Elapsed < timeout)
             {
-                if (IsStarted())
+                if (IsStarted(timeout))
                 {
                     log.Debug($"Instance has successfully started in {sw.Elapsed.TotalSeconds:0.##} second(s).");
                     return true;
@@ -42,10 +42,10 @@ namespace Vostok.ZooKeeper.LocalEnsemble.Helpers
             return false;
         }
 
-        private bool IsStarted()
-            => SendFourLetterWord("ruok") == "imok";
+        private bool IsStarted(TimeSpan timeout)
+            => SendFourLetterWord("ruok", timeout) == "imok";
 
-        private string SendFourLetterWord(string word)
+        private string SendFourLetterWord(string word, TimeSpan timeout)
         {
             log.Debug($"Sending `{word}` command to {host}:{port}.");
 
@@ -53,13 +53,16 @@ namespace Vostok.ZooKeeper.LocalEnsemble.Helpers
             {
                 using (var client = new TcpClient(host, port))
                 using (var stream = client.GetStream())
+                using (var cts = new CancellationTokenSource((int)timeout.TotalMilliseconds))
+                    // ReSharper disable once AccessToDisposedClosure
+                using (cts.Token.Register(() => stream.Close()))
                 using (var reader = new StreamReader(stream))
                 {
                     var bytes = Encoding.UTF8.GetBytes(word);
 
                     stream.Write(bytes, 0, bytes.Length);
 
-                    var result = reader.ReadToEnd();
+                    var result = reader.ReadToEndAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
                     log.Debug($"Response to `{word}` command is '{result}'.");
                     return result;
