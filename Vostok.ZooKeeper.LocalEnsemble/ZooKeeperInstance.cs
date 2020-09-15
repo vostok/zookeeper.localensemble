@@ -20,14 +20,14 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         public ZooKeeperInstance(int id, string baseDirectory, int clientPort, int peerPort, int electionPort, ILog log)
         {
-            this.log = log.ForContext($"id {id}");
+            this.log = log = log.ForContext($"id {id}");
 
             Id = id;
             BaseDirectory = baseDirectory;
             ClientPort = clientPort;
             PeerPort = peerPort;
             ElectionPort = electionPort;
-            healthChecker = new ZooKeeperHealthChecker(this.log, "localhost", clientPort);
+            healthChecker = new ZooKeeperHealthChecker(log, "localhost", clientPort);
             runner = new ShellRunner(new ShellRunnerSettings("java")
             {
                 Arguments = BuildZooKeeperArguments(),
