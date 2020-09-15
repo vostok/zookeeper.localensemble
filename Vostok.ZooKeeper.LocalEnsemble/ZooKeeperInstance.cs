@@ -20,7 +20,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         public ZooKeeperInstance(int id, string baseDirectory, int clientPort, int peerPort, int electionPort, ILog log)
         {
-            this.log = log = log.ForContext($"id {id}");
+            this.log = log = log.ForContext($"instance {id}");
 
             Id = id;
             BaseDirectory = baseDirectory;
