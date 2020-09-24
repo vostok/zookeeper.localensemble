@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Vostok.Commons.Local;
 using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
 using Vostok.ZooKeeper.LocalEnsemble.Helpers;
@@ -16,21 +15,24 @@ namespace Vostok.ZooKeeper.LocalEnsemble
     public class ZooKeeperInstance
     {
         private readonly ILog log;
-        private readonly WindowsProcessKillJob processKillJob;
         private readonly ZooKeeperHealthChecker healthChecker;
-        private volatile Process process;
+        private readonly ShellRunner runner;
 
         public ZooKeeperInstance(int id, string baseDirectory, int clientPort, int peerPort, int electionPort, ILog log)
         {
-            this.log = log.ForContext($"id {id}");
+            this.log = log = log.ForContext($"instance {id}");
 
             Id = id;
             BaseDirectory = baseDirectory;
             ClientPort = clientPort;
             PeerPort = peerPort;
             ElectionPort = electionPort;
-            processKillJob = OsHelper.IsUnix ? null : new WindowsProcessKillJob(this.log);
-            healthChecker = new ZooKeeperHealthChecker(this.log, "localhost", clientPort);
+            healthChecker = new ZooKeeperHealthChecker(log, "localhost", clientPort);
+            runner = new ShellRunner(new ShellRunnerSettings("java")
+            {
+                Arguments = BuildZooKeeperArguments(),
+                WorkingDirectory = BinDirectory
+            }, log);
         }
 
         /// <summary>
@@ -81,7 +83,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         /// <summary>
         /// Returns whether this instance is currently running.
         /// </summary>
-        public bool IsRunning => process?.HasExited == false;
+        public bool IsRunning => runner.IsRunning;
 
         /// <summary>
         /// <para>Starts instance.</para>
@@ -91,56 +93,13 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             if (IsRunning)
                 return;
 
-            var processStartInfo = new ProcessStartInfo("java")
-            {
-                Arguments = BuildZooKeeperArguments(),
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                WorkingDirectory = BinDirectory
-            };
-
-            process = new Process
-            {
-                StartInfo = processStartInfo
-            };
-
-            if (!process.Start())
-                throw new Exception($"Failed to start process of instance '{Id}'.");
-
-            Task.Run(
-                async () =>
-                {
-                    while (!process.StandardError.EndOfStream)
-                        log.Error(await process.StandardError.ReadLineAsync().ConfigureAwait(false));
-                });
+            runner.Start();
 
             if (!healthChecker.WaitStarted(20.Seconds()))
                 throw new Exception($"instance '{Id}' has not warmed up in 20 seconds..");
-
-            processKillJob?.AddProcess(process);
         }
 
-        public void Stop()
-        {
-            if (IsRunning)
-            {
-                log.Debug("Stopping..");
-
-                try
-                {
-                    process.Kill();
-                    process.WaitForExit();
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-
-            process = null;
-        }
+        public void Stop() => runner.Stop();
 
         public override string ToString()
             => $"localhost:{ClientPort}:{PeerPort}:{ElectionPort} (id {Id}) at '{BaseDirectory}'";
