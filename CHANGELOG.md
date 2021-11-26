@@ -1,4 +1,4 @@
-## 0.1.12 (26-11-2021):
+## 0.1.2 (26-11-2021):
 
 Added retries for Zookeeper deployment.
 
