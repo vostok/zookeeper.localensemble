@@ -37,9 +37,21 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         [NotNull]
         public static ZooKeeperEnsemble DeployNew([NotNull] ZooKeeperEnsembleSettings settings, [NotNull] ILog log, bool startInstances = true)
         {
-            var ensemble = new ZooKeeperEnsemble(settings, log);
+            ZooKeeperEnsemble ensemble = null;
+            
+            Retrier.RetryOnException(() =>
+                {
+                    ensemble = new ZooKeeperEnsemble(settings, log);
 
-            ensemble.Deploy(startInstances);
+                    ensemble.Deploy(startInstances);
+                },
+                3,
+                "Unable to start Zookeeper ensemble",
+                () =>
+                {
+                    log.Warn("Retrying Zookeeper.LocalEnsemble deployment...");
+                    ensemble?.Dispose();
+                });
 
             return ensemble;
         }
@@ -150,20 +162,10 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         private void Deploy(bool startInstances)
         {
-            Retrier.RetryOnException(() =>
-            {
-                ZooKeeperDeployer.DeployInstances(Instances);
+            ZooKeeperDeployer.DeployInstances(Instances);
 
-                if (startInstances)
-                    Start();
-            },
-            3,
-            "Unable to start Zookeeper ensemble",
-            () =>
-            {
-                log.Warn("Retrying Zookeeper.LocalEnsemble deployment...");
-                Dispose();
-            });
+            if (startInstances)
+                Start();
         }
     }
 }
