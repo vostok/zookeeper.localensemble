@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Vostok.Commons.Helpers.Network;
+using Vostok.Commons.Local.Helpers;
 using Vostok.Commons.Threading;
 using Vostok.Logging.Abstractions;
 
@@ -149,19 +150,20 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         private void Deploy(bool startInstances)
         {
-            try
+            Retrier.RetryOnException(() =>
             {
                 ZooKeeperDeployer.DeployInstances(Instances);
 
                 if (startInstances)
                     Start();
-            }
-            catch (Exception error)
+            },
+            3,
+            "Unable to start Zookeeper ensemble",
+            () =>
             {
-                log.Error(error, "Error in starting. Will try to stop.");
+                log.Warn("Retrying Zookeeper.LocalEnsemble deployment...");
                 Dispose();
-                throw;
-            }
+            });
         }
     }
 }
