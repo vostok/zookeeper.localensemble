@@ -38,11 +38,11 @@
   <ItemGroup>
     <Reference Include="Vostok.Logging.Abstractions">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\vostok.logging.abstractions\Vostok.Logging.Abstractions\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
+      <HintPath>..\..\vostok.logging.abstractions\Vostok.Logging.Abstractions\bin\Release\$(ReferencesFramework)\Vostok.Logging.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Vostok.Commons.Local">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\vostok.commons.local\Vostok.Commons.Local\bin\Release\netstandard2.0\Vostok.Commons.Local.dll</HintPath>
+      <HintPath>..\..\vostok.commons.local\Vostok.Commons.Local\bin\Release\$(ReferencesFramework)\Vostok.Commons.Local.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
