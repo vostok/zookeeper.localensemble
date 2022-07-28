@@ -1,0 +1,37 @@
+override Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.ToString() -> string
+static Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.DeployNew(int size, Vostok.Logging.Abstractions.ILog log, bool startInstances = true) -> Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble
+static Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.DeployNew(int startingId, int size, Vostok.Logging.Abstractions.ILog log, bool startInstances = true) -> Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble
+static Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.DeployNew(Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings settings, Vostok.Logging.Abstractions.ILog log, bool startInstances = true) -> Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.ConnectionString.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.Dispose() -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.Instances.get -> System.Collections.Generic.IReadOnlyList<Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance>
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.IsDisposed.get -> bool
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.IsRunning.get -> bool
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.Start() -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.Stop() -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.Topology.get -> System.Uri[]
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.BaseDirectory.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.BaseDirectory.set -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.InstancesPorts.get -> System.Collections.Generic.IList<int>
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.InstancesPorts.set -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.Size.get -> int
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.Size.set -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.StartingId.get -> int
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.StartingId.set -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.ZooKeeperEnsembleSettings() -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.BaseDirectory.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.BinDirectory.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.ClientPort.get -> int
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.ConfDirectory.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.DataDirectory.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.ElectionPort.get -> int
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.Id.get -> int
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.IsRunning.get -> bool
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.LibDirectory.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.PeerPort.get -> int
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.Start() -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.Stop() -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.ZooKeeperInstance(int id, string baseDirectory, int clientPort, int peerPort, int electionPort, Vostok.Logging.Abstractions.ILog log) -> void
