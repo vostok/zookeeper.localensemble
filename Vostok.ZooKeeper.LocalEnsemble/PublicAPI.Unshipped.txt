@@ -1,0 +1,2 @@
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.LogsDirectory.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.LogsDirectory.set -> void

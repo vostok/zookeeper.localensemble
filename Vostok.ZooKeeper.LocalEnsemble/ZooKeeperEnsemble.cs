@@ -18,9 +18,11 @@ namespace Vostok.ZooKeeper.LocalEnsemble
     {
         private readonly ILog log;
         private readonly AtomicBoolean isDisposed = new AtomicBoolean(false);
+        private ZooKeeperEnsembleSettings settings;
 
         private ZooKeeperEnsemble([NotNull] ZooKeeperEnsembleSettings settings, [NotNull] ILog log)
         {
+            this.settings = settings;
             this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<ZooKeeperEnsemble>();
 
             if (settings.Size < 1)
@@ -31,7 +33,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
                     "You should either specify port for every instance or specify none",
                     nameof(settings.InstancesPorts));
 
-            Instances = CreateInstances(settings, this.log);
+            Instances = CreateInstances();
         }
 
         [NotNull]
@@ -134,7 +136,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             }
         }
 
-        private static List<ZooKeeperInstance> CreateInstances(ZooKeeperEnsembleSettings settings, ILog log)
+        private List<ZooKeeperInstance> CreateInstances()
         {
             var instances = new List<ZooKeeperInstance>(settings.Size);
 
@@ -162,7 +164,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         private void Deploy(bool startInstances)
         {
-            ZooKeeperDeployer.DeployInstances(Instances);
+            ZooKeeperDeployer.DeployInstances(Instances, settings);
 
             if (startInstances)
                 Start();

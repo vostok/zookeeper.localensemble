@@ -1,3 +1,7 @@
+## 0.1.6 (08-09-2022):
+
+Add logs directory for ensemble in settings.
+
 ## 0.1.5 (06-12-2021):
 
 Added `net6.0` target.
