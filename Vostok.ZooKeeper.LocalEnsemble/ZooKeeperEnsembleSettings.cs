@@ -32,8 +32,8 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         public int StartingId { get; set; } = 1;
 
         /// <summary>
-        /// If set to a non-null value, logs for each instance will be written here
-        /// default location - in BaseDirectory
+        /// <para>If set to a non-null value, logs for each instance will be written here</para>
+        /// <para>default location - in BaseDirectory</para>
         /// </summary>
         [CanBeNull]
         public string LogsDirectory { get; set; }
