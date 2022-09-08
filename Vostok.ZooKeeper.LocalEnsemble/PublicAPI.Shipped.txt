@@ -1,4 +1,4 @@
-override Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.ToString() -> string
+﻿override Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.ToString() -> string
 static Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.DeployNew(int size, Vostok.Logging.Abstractions.ILog log, bool startInstances = true) -> Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble
 static Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.DeployNew(int startingId, int size, Vostok.Logging.Abstractions.ILog log, bool startInstances = true) -> Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble
 static Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble.DeployNew(Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings settings, Vostok.Logging.Abstractions.ILog log, bool startInstances = true) -> Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsemble
@@ -16,6 +16,8 @@ Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.BaseDirectory.get -> st
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.BaseDirectory.set -> void
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.InstancesPorts.get -> System.Collections.Generic.IList<int>
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.InstancesPorts.set -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.LogsDirectory.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.LogsDirectory.set -> void
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.Size.get -> int
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.Size.set -> void
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.StartingId.get -> int
