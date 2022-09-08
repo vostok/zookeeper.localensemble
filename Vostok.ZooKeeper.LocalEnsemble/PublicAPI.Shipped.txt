@@ -20,6 +20,8 @@ Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.Size.get -> int
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.Size.set -> void
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.StartingId.get -> int
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.StartingId.set -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.LogsDirectory.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.LogsDirectory.set -> void
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.ZooKeeperEnsembleSettings() -> void
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance
 Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.BaseDirectory.get -> string

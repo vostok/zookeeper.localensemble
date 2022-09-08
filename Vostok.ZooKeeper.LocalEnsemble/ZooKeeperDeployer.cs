@@ -10,11 +10,11 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 {
     internal static class ZooKeeperDeployer
     {
-        public static void DeployInstances(IReadOnlyList<ZooKeeperInstance> instances)
+        public static void DeployInstances(IReadOnlyList<ZooKeeperInstance> instances, ZooKeeperEnsembleSettings settings)
         {
             var configs = GenerateConfigs(instances);
             for (var i = 0; i < instances.Count; i++)
-                DeployInstance(instances[i], configs[i]);
+                DeployInstance(instances[i], configs[i], settings);
         }
 
         public static void CleanupInstances(IReadOnlyList<ZooKeeperInstance> instances)
@@ -36,10 +36,10 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             }
         }
 
-        private static void DeployInstance(ZooKeeperInstance instance, string config)
+        private static void DeployInstance(ZooKeeperInstance instance, string config, ZooKeeperEnsembleSettings settings)
         {
             CreateDirectories(instance);
-            DeployFiles(instance, config);
+            DeployFiles(instance, config, settings);
         }
 
         private static string[] GenerateConfigs(IReadOnlyList<ZooKeeperInstance> instances)
@@ -73,7 +73,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             Directory.CreateDirectory(instance.ConfDirectory);
         }
 
-        private static void DeployFiles(ZooKeeperInstance instance, string config)
+        private static void DeployFiles(ZooKeeperInstance instance, string config, ZooKeeperEnsembleSettings settings)
         {
             // (iloktionov): Libraries.
             SaveResources(instance.LibDirectory, "jline_0_9_94.jar");
@@ -87,7 +87,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             SaveResources(instance.BaseDirectory, "zookeeper_3_4_13.jar");
             // (iloktionov): Configs.
             File.WriteAllText(Path.Combine(instance.ConfDirectory, "zoo.cfg"), config);
-            File.WriteAllText(Path.Combine(instance.ConfDirectory, "log4j.properties"), CreateLog4jConfig(instance));
+            File.WriteAllText(Path.Combine(instance.ConfDirectory, "log4j.properties"), CreateLog4jConfig(instance, settings));
             // (iloktionov): Self id.
             File.WriteAllText(Path.Combine(instance.DataDirectory, "myid"), instance.Id.ToString());
         }
@@ -100,12 +100,16 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         private static byte[] GetResources(string fileName) => ResourceHelper.GetBytes<ZooKeeperInstance>($"Vostok.ZooKeeper.LocalEnsemble.Resources.{fileName}");
 
         // ReSharper disable once InconsistentNaming
-        private static string CreateLog4jConfig(ZooKeeperInstance instance)
+        private static string CreateLog4jConfig(ZooKeeperInstance instance, ZooKeeperEnsembleSettings settings)
         {
+            var logPath = settings.LogsDirectory ?? "../";
+            logPath = Path.Combine(logPath, $"ZK-{instance.Id}.log");
+            logPath = logPath.Replace(Path.DirectorySeparatorChar, '/');
+
             var builder = new StringBuilder();
             builder.AppendLine("log4j.rootLogger=DEBUG, ROLLINGFILE");
             builder.AppendLine("log4j.appender.ROLLINGFILE=org.apache.log4j.RollingFileAppender");
-            builder.AppendLine("log4j.appender.ROLLINGFILE.File=" + $"../ZK-{instance.Id}.log");
+            builder.AppendLine($"log4j.appender.ROLLINGFILE.File={logPath}");
             builder.AppendLine("log4j.appender.ROLLINGFILE.Threshold=DEBUG");
             builder.AppendLine("log4j.appender.ROLLINGFILE.layout=org.apache.log4j.PatternLayout");
             builder.AppendLine("log4j.appender.ROLLINGFILE.layout.ConversionPattern=[myid:%X{myid}] - %d %-5p [%t:%C{1}@%L] - %m%n");
