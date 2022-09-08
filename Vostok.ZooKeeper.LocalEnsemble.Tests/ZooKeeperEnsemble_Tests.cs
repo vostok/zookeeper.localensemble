@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using FluentAssertions;
@@ -14,6 +16,28 @@ namespace Vostok.ZooKeeper.LocalEnsemble.Tests
     internal class ZooKeeperEnsemble_Tests
     {
         private readonly ILog log = new SynchronousConsoleLog();
+
+        [Test]
+        public void DeployNew_should_run_place_logs_in_directory()
+        {
+            var logsDirectory = Path.GetFullPath("zk-logs");
+            if (Directory.Exists(logsDirectory))
+                Directory.Delete(logsDirectory);
+
+            var instances = 2;
+            var settings = new ZooKeeperEnsembleSettings {Size = instances, LogsDirectory = logsDirectory};
+            using (var ensemble = ZooKeeperEnsemble.DeployNew(settings, log))
+            {
+                ensemble.IsRunning.Should().BeTrue();
+            }
+
+            var logs = Directory.GetFiles(settings.LogsDirectory).ToArray();
+            logs.Length.Should().Be(instances);
+            for (var i = 1; i < 1 + instances; i++)
+            {
+                File.Exists(Path.Combine(settings.LogsDirectory, $"ZK-{i}.log")).Should().Be(true);
+            }
+        }
 
         [TestCase(1)]
         [TestCase(5)]
