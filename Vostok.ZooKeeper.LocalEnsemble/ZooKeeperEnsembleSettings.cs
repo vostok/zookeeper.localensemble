@@ -37,14 +37,13 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         /// </summary>
         [CanBeNull]
         public string LogsDirectory { get; set; }
-        
+
         /// <summary>
         /// <para>this name is used to build connection string</para>
         /// <para>default is 'localhost'</para>
         /// <para>does not affect listening options for ZK - it will listen all available intefaces</para>
         /// <para>known use cases: inside docker with ipv6 problems can specify '127.0.0.1' to prevent using ipv6 address (ZK may not listen it)</para>
         /// </summary>
-        [CanBeNull]
-        public string Hostname { get; set; }
+        public string Hostname { get; set; } = "localhost";
     }
 }

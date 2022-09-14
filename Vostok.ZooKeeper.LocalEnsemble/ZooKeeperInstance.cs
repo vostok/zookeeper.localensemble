@@ -40,7 +40,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         [Obsolete]
         public ZooKeeperInstance(int id, string baseDirectory, int clientPort, int peerPort, int electionPort, ILog log)
-            : this(new ZooKeeperInstanceSettings(id, baseDirectory, clientPort, peerPort, electionPort, "localhost"), log)
+            : this(new ZooKeeperInstanceSettings(id, baseDirectory, clientPort, peerPort, electionPort), log)
         {
         }
 
