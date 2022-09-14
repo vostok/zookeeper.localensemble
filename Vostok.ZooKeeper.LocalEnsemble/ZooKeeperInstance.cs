@@ -14,25 +14,34 @@ namespace Vostok.ZooKeeper.LocalEnsemble
     [PublicAPI]
     public class ZooKeeperInstance
     {
+        private readonly string hostname;
         private readonly ILog log;
         private readonly ZooKeeperHealthChecker healthChecker;
         private readonly ShellRunner runner;
 
-        public ZooKeeperInstance(int id, string baseDirectory, int clientPort, int peerPort, int electionPort, ILog log)
+        public ZooKeeperInstance(ZooKeeperInstanceSettings settings, ILog log)
         {
-            this.log = log = log.ForContext($"Instance-{id}");
+            Id = settings.Id;
+            this.log = log = log.ForContext($"Instance-{Id}");
 
-            Id = id;
-            BaseDirectory = baseDirectory;
-            ClientPort = clientPort;
-            PeerPort = peerPort;
-            ElectionPort = electionPort;
-            healthChecker = new ZooKeeperHealthChecker(log, "localhost", clientPort);
+            BaseDirectory = settings.BaseDirectory;
+            ClientPort = settings.ClientPort;
+            PeerPort = settings.PeerPort;
+            ElectionPort = settings.ElectionPort;
+            hostname = settings.Hostname;
+            healthChecker = new ZooKeeperHealthChecker(log, hostname, ClientPort);
             runner = new ShellRunner(new ShellRunnerSettings("java")
-            {
-                Arguments = BuildZooKeeperArguments(),
-                WorkingDirectory = BinDirectory
-            }, log);
+                {
+                    Arguments = BuildZooKeeperArguments(),
+                    WorkingDirectory = BinDirectory
+                },
+                log);
+        }
+
+        [Obsolete]
+        public ZooKeeperInstance(int id, string baseDirectory, int clientPort, int peerPort, int electionPort, ILog log)
+            : this(new ZooKeeperInstanceSettings(id, baseDirectory, clientPort, peerPort, electionPort, "localhost"), log)
+        {
         }
 
         /// <summary>
@@ -102,7 +111,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         public void Stop() => runner.Stop();
 
         public override string ToString()
-            => $"localhost:{ClientPort}:{PeerPort}:{ElectionPort} (id {Id}) at '{BaseDirectory}'";
+            => $"{hostname}:{ClientPort}:{PeerPort}:{ElectionPort} (id {Id}) at '{BaseDirectory}'";
 
         private string BuildZooKeeperArguments()
         {

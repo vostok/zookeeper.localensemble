@@ -1,0 +1,11 @@
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.Hostname.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperEnsembleSettings.Hostname.set -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstance.ZooKeeperInstance(Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstanceSettings settings, Vostok.Logging.Abstractions.ILog log) -> void
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstanceSettings
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstanceSettings.BaseDirectory.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstanceSettings.ClientPort.get -> int
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstanceSettings.ElectionPort.get -> int
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstanceSettings.Hostname.get -> string
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstanceSettings.Id.get -> int
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstanceSettings.PeerPort.get -> int
+Vostok.ZooKeeper.LocalEnsemble.ZooKeeperInstanceSettings.ZooKeeperInstanceSettings(int id, string baseDirectory, int clientPort, int peerPort, int electionPort, string hostname) -> void

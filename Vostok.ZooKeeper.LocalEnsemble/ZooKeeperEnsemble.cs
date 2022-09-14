@@ -85,13 +85,13 @@ namespace Vostok.ZooKeeper.LocalEnsemble
         /// Returns connection string that can be used to connect to this ensemble.
         /// </summary>
         public string ConnectionString
-            => string.Join(",", Instances.Select(instance => $"localhost:{instance.ClientPort}"));
+            => string.Join(",", Instances.Select(instance => $"{GetHostname()}:{instance.ClientPort}"));
 
         /// <summary>
         /// Returns ensemble topology.
         /// </summary>
         public Uri[] Topology
-            => Instances.Select(instance => new Uri("http://localhost:" + instance.ClientPort)).ToArray();
+            => Instances.Select(instance => new Uri($"http://{GetHostname()}:" + instance.ClientPort)).ToArray();
 
         /// <summary>
         /// Starts all instances in this ensemble.
@@ -136,6 +136,11 @@ namespace Vostok.ZooKeeper.LocalEnsemble
             }
         }
 
+        private string GetHostname()
+        {
+            return settings.Hostname ?? "localhost";
+        }
+
         private List<ZooKeeperInstance> CreateInstances()
         {
             var instances = new List<ZooKeeperInstance>(settings.Size);
@@ -154,7 +159,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
                 instanceDirectoryPath = Path.GetFullPath(instanceDirectoryPath);
 
-                instances.Add(new ZooKeeperInstance(index, instanceDirectoryPath, clientPort, peerPort, electionPort, log));
+                instances.Add(new ZooKeeperInstance(new ZooKeeperInstanceSettings(index, instanceDirectoryPath, clientPort, peerPort, electionPort, GetHostname()), log));
             }
 
             log.Info("Created instances: \n\t" + string.Join("\n\t", instances.Select(i => i.ToString())));

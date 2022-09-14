@@ -44,6 +44,7 @@ namespace Vostok.ZooKeeper.LocalEnsemble
 
         private static string[] GenerateConfigs(IReadOnlyList<ZooKeeperInstance> instances)
         {
+            //todo maybe get 'localhost' from settings?
             var serversList = string.Join(Environment.NewLine, instances.Select(instance => $"server.{instance.Id}=localhost:{instance.PeerPort}:{instance.ElectionPort}"));
             var configs = new string[instances.Count];
             for (var i = 0; i < configs.Length; i++)
