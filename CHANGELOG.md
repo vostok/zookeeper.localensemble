@@ -1,3 +1,7 @@
+## 0.1.7 (08-09-2022):
+
+Added hostname for ensemble in settings. Used for communication client->ensemble
+
 ## 0.1.6 (08-09-2022):
 
 Add logs directory for ensemble in settings.
