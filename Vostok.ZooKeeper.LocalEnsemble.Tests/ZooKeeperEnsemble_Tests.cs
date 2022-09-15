@@ -18,11 +18,31 @@ namespace Vostok.ZooKeeper.LocalEnsemble.Tests
         private readonly ILog log = new SynchronousConsoleLog();
 
         [Test]
+        public void Can_use_Ip_In_Hostname()
+        {
+            var hostname = IPAddress.Loopback.ToString();
+            using (var ensemble = ZooKeeperEnsemble.DeployNew(
+                new ZooKeeperEnsembleSettings
+                {
+                    Size = 2,
+                    Hostname = hostname
+                },
+                log))
+            {
+                ensemble.IsRunning.Should().BeTrue();
+                Console.WriteLine(ensemble.ConnectionString);
+                ensemble.ConnectionString.Contains(hostname).Should().Be(true);
+                (ensemble.ConnectionString.IndexOf("localhost", StringComparison.OrdinalIgnoreCase) < 0).Should().Be(true);
+            }
+        }
+
+
+        [Test]
         public void DeployNew_should_run_place_logs_in_directory()
         {
             var logsDirectory = Path.GetFullPath("zk-logs");
             if (Directory.Exists(logsDirectory))
-                Directory.Delete(logsDirectory);
+                Directory.Delete(logsDirectory, true);
 
             var instances = 2;
             var settings = new ZooKeeperEnsembleSettings {Size = instances, LogsDirectory = logsDirectory};
