@@ -1,3 +1,7 @@
+## 0.1.8 (16-12-2024): 
+
+Bump NuGet deps versions
+
 ## 0.1.7 (08-09-2022):
 
 Added hostname for ensemble in settings. Used for communication client->ensemble
