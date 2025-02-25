@@ -7,6 +7,16 @@ notests *default:
 
   install:
     - Vostok.ZooKeeper.LocalEnsemble/bin/Release/netstandard2.0/Vostok.ZooKeeper.LocalEnsemble.dll
+    - groups:
+        - target-framework: "netstandard2.0"
+          libraries:
+            - Vostok.ZooKeeper.LocalEnsemble/bin/Release/netstandard2.0/Vostok.ZooKeeper.LocalEnsemble.dll
+        - target-framework: "net6.0"
+          libraries:
+            - Vostok.ZooKeeper.LocalEnsemble/bin/Release/net6.0/Vostok.ZooKeeper.LocalEnsemble.dll
+        - target-framework: "net8.0"
+          libraries:
+            - Vostok.ZooKeeper.LocalEnsemble/bin/Release/net8.0/Vostok.ZooKeeper.LocalEnsemble.dll
 
   deps:
     - vostok.commons.local/notests
@@ -20,6 +30,19 @@ full-build > notests:
   build:
     target: Vostok.ZooKeeper.LocalEnsemble.sln
     configuration: Release
+  
+  install:
+    - Vostok.ZooKeeper.LocalEnsemble/bin/Release/netstandard2.0/Vostok.ZooKeeper.LocalEnsemble.dll
+    - groups:
+        - target-framework: "netstandard2.0"
+          libraries:
+            - Vostok.ZooKeeper.LocalEnsemble/bin/Release/netstandard2.0/Vostok.ZooKeeper.LocalEnsemble.dll
+        - target-framework: "net6.0"
+          libraries:
+            - Vostok.ZooKeeper.LocalEnsemble/bin/Release/net6.0/Vostok.ZooKeeper.LocalEnsemble.dll
+        - target-framework: "net8.0"
+          libraries:
+            - Vostok.ZooKeeper.LocalEnsemble/bin/Release/net8.0/Vostok.ZooKeeper.LocalEnsemble.dll
 
   deps:
     - -vostok.devtools
